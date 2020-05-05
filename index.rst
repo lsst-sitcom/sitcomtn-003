@@ -89,14 +89,14 @@ In order for the AOS to work as one system, a clean understanding of these CS an
 The Optical Coordinate System
 #############################
 
-Our AOS system-wide CS is the Optical Coordinate System (OCS). The defition of the OCS is the same as defined in LTS-136 :cite:`LTS-136`, Section 2.2. In summary -
+Our AOS system-wide CS is the Optical Coordinate System (OCS). The definition of the OCS is the same as defined in LTS-136 :cite:`LTS-136`, Section 2.2. In summary -
 
 - The origin of the OCS is at the theoretical vertex of M1.
 - +z axis points along the optical axis, toward the sky
 - +x axis goes in parallel with the elevation axis. When look from the sky, +x points to the right.
 - +y axis can then be determined using the right hand rule. At horizon pointing, +y goes up.
-- The azimuth angle is zero when the telescope points toward northern horizon. Looking from the sky, it increase clockwise.
-- The zenith angle is zero when the telescope points at zenith. It increase to 90 degrees for horizon pointing.
+- The azimuth angle is zero when the telescope points toward northern horizon. Looking from the sky, it increases clockwise.
+- The zenith angle is zero when the telescope points at zenith. It increases to 90 degrees for horizon pointing.
 
 .. figure:: /_static/ocs.png
    :name: fig-ocs
@@ -107,24 +107,25 @@ Optical Coordinate System (OCS). Left: view from the sky; Right: side view from 
 
 The idea is that the OCS is fixed to M1, which defines the reference for the optical system.
 Relative to the ground, the OCS rotates with the azimuth angle and the zenith angle.
-An easy way to identify the +x/+y/+z while looking at a drawing or the actual hardware is that, the walkway on the TMA, above M1M3, is in the +y direction. Otherwise when we go toward horizon it is going to bump into the ground.
+An easy way to identify the +x/+y/+z while looking at a drawing or the actual hardware is that, the walkway on the TMA, above M1M3, is in the +y direction. Otherwise when we go toward horizon it is going to bump into the dome floor.
 
 .. note::
-   The Telescope and Site top-level CS document is LTS-136 :cite:`LTS-136`, and the Camera top-level CS document is LCA-280 :cite:`LCA-280`. Unlike those two documents, we do not define the Observatory Mount CS or the Azimuth CS, because these CS, as defined by LTS-136 :cite:`LTS-136` and LCA-280 :cite:`LCA-280`, actually contradict each other, in terms of which axis points north, which points west etc. We also avoid the use of terms such as ``elevation angle`` and ``altitude``. Instead, we always use ``zenith angle``, as defined above.
+   The Telescope and Site top-level CS document is LTS-136 :cite:`LTS-136`, and the Camera top-level CS document is LCA-280 :cite:`LCA-280`. Unlike those two documents, we do not define the Observatory Mount CS or the Azimuth CS, because these CSs, as defined by LTS-136 :cite:`LTS-136` and LCA-280 :cite:`LCA-280`, actually contradict each other, in terms of which axis points north, which points west, etc. We also avoid the use of terms such as ``elevation angle`` and ``altitude``. Instead, we always use ``zenith angle``, as defined above.
 
 
 ################
 Zemax and PhoSim
 ################
 
-We discuss the Zemax and PhoSim CS first, because these are relatively easier to define -
+We discuss the Zemax CS (ZCS) and PhoSim CS (PCS) first, because these are relatively easier to define -
 they are self-consistent within their own framework.
-When we say Zemax CS, we refer to the global CS as used by
-`the official Rubin Observatory optical model <https://confluence.lsstcorp.org/display/SYSENG/As-built+optical+model>`__. The good news here is that when we worked with the PhoSim team at Purdue on the AOS simulations, we made sure that the PhoSim CS conforms to the project standard, at least externally, to the level that we care about while exercising AOS control.
-The Zemax/PhoSim CS is defined as,
+When we say ZCS, we refer to the global CS as used by
+`the official Rubin Observatory optical model <https://confluence.lsstcorp.org/display/SYSENG/As-built+optical+model>`__. The good news here is that when we worked with the PhoSim team at Purdue on the AOS simulations, we made sure that the PCS conforms to the project standard, at least externally, to the level that we care about while exercising AOS control.
+So ZCS and PCS are the same CS. We will just refer to it as the ZCS from now on.
+The ZCS is defined as,
 
-- The origin of Zemax/PhoSim CS overlaps with OCS origin, i.e., at the theoretical vertex of M1.
-- The +z axis of Zemax/PhoSim CS points from the sky to M1M3. It follows the direction of the incoming on-axis rays. This is opposite of the OCS +z axis.
+- The origin of ZCS overlaps with OCS origin, i.e., at the theoretical vertex of M1.
+- The +z axis of ZCS points from the sky to M1M3. It follows the direction of the incoming on-axis rays. This is opposite of the OCS +z axis.
 - The +y axis is the same as OCS +y axis.
 - The +x axis is the opposite of OCS +x axis
 
@@ -155,9 +156,9 @@ M1M3
 ####
 
 The M1M3 glass mirror was casted and polished at the University of Arizona Richard F. Caris Mirror Lab (RFCML).
-The mirror cell was made by CAID Industriess, and software is designed and written by the Rubin Obs. team.
+The mirror cell was made by CAID Industries, and software is designed and written by the Rubin Obs. team.
 
-When looking at M1M3 drawings and data, be wary that there are multiple versions  of CS around. In particular, mechanical folks look at the actuators from inside the M1M3 cell a lot, so they tend to define +z as pointing down from M2. While optical people always look at the M1M3 surface from outside, so they tend to define +z as pointing to the sky. People also flip the +x around the +y axes sometimes. We define M1M3 CS as the following -
+When looking at M1M3 drawings and data, be wary that there are multiple versions of the CSs around. In particular, mechanical folks look at the actuators from inside the M1M3 cell a lot, so they tend to define +z as pointing down from M2. While optical people always look at the M1M3 surface from outside, so they tend to define +z as pointing to the sky. People also flip the +x around the +y axes sometimes. We define M1M3 CS as the following -
 
 - The origin of M1M3 CS overlaps with OCS origin, i.e., at the theoretical vertex of M1.
 - +x points toward actuator 106.
@@ -182,13 +183,17 @@ The Rubin Obs. official M1M3 Finite Element Model (FEM), as provided by Doug Nei
 <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_README.txt>`__
 use the M1M3 CS as well.
 
-- When the force on an single-axis actuator or the primary cylinder of a lateral or bilateral actuator is positive, it pushes M1M3 toward the sky, along +z axis. The bending mode forces are given `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_force.txt>`__.
+- When the force on an single-axis actuator or the primary cylinder of a lateral or crosslateral actuator is positive, it pushes M1M3 toward the sky, along +z axis. The bending mode forces are given `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_force.txt>`__.
 - For bending modes, there are two variaties. The `surface normal bending modes <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_grid.txt>`__ are those that were directly measured in the RFCML using the interferometers. Here the displacement vectors of the Finite Element nodes point toward the center of curvature, and are normal to the M1M3 surface. For use in an optical raytrace program like Zemax or PhoSim, and for deriving the senM, we need the `surface sag bending modes <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_sag.txt>`__. These displacement vectors point along +z axis of the OCS or M1M3 CS.
 
 Like other components of the AOS, M1M3 operates mostely off its Look-Up Table (LUT), which contains our best knowledge of the forces as functions as gravity (or zenith angle) and temperature profiles on and around the mirror surfaces. The current M1M3 LUT can be found `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/FLUT.yaml>`__.
 
 - The zenith angle, as the primary input to the M1M3 LUT, is defined the same way as the OCS zenith angle as defined in Sec. :ref:`section-ocs`.
-- Unrelated to the bending modes, but relevant to the LUT, are the forces on the secondary cylinders of the lateral and bilateral actuators. When the force on the secondary cylinder of an lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between +y and +z axes. When the force on the secondar cylinder of a bilateral actuator is positive, it pushes M1M3 in the x-z plane, along the 45 degree line between either the +z and +x or the +z and -x directions, depending on the location of the bilateral actuator.
+- Unrelated to the bending modes, but relevant to the LUT, are the forces on the secondary cylinders of the lateral and crosslateral actuators. See all the M1M3 actuator types and their orientations `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/LS_CUP_ACTSTYLE_ID.xlsx>`__.
+
+  - 96 out of the 100 lateral actuators are +Y laterals. When the force on the secondary cylinder of an +Y lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between +y and +z axes.
+  - 4 of the lateral actuators are -Y laterals (due to space constraints). When the force on the secondary cylinder of an -Y lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between -y and +z axes.
+  - There are 12 crosslateral actuators, 6 on each side of the +y axis. When the force on the secondar cylinder of a crosslateral actuator is positive, it pushes M1M3 in the x-z plane, along the 45 degree line between either the +z and +x (if the crosslateral actuator has x<0) or the +z and -x directions (if the crosslateral actuator has x>0).
 
 The M1M3 control software uses the M1M3 CS as well (see `here <https://github.com/lsst-ts/ts_m1m3support/blob/master/Controller/SettingFiles/Tables/ForceActuatorTable.csv>`__). When we reposition the M1M3 mirror relative to its cell, that is in referece to the M1M3 CS.
 
@@ -347,7 +352,7 @@ The Camera CS.
 
 For the wavefront sensors, the split between the intra- and extra-focal chips are parallel to the CCS y-axis on R00 and R44, and parallel to the CCS x-axis on R40 and R04. Here we refer to each 2k by 4k as one chip. Sometimes we see them refered to as half-chips as well. The one closer to the field center is always the extra-focal chip, which has larger z-coordinate in the CCS. The camera team refers to the extra-focal chip as low chip sometimes, because it is lower than the focal plane when looked through the L3 lens. For the same reason, the intra-focal chips are refered to as high chips.
 
-Two out of the four wavefront sensors (R00 and R44) have their CCD segments oriented the same way as the science sensors. Most of the science sensor segments, as seen in the CCS, has the parallel transfer direction parallel the x-axis. However, astronomers are much more used to seeing images with the parallel transfer direction going vertically, and serial register going horizontally. LSE-349 :cite:`LSE-349` defines the project's official Data Visualization CS (DVCS) as a x-y transpose of the CCS. We should be aware that most of the time when we see a visualization of certain quantities over the entire focal plane, a raft, or a single CCD, if CS is not explicitly given, the assumption should be that it is in DVCS.
+Two out of the four wavefront sensors (R00 and R44) have their CCD segments oriented the same way as the science sensors. Most of the science sensor segments, as seen in the CCS, has the parallel transfer direction parallel the x-axis. However, astronomers are much more used to seeing images with the parallel transfer direction going vertically, and serial register going horizontally. LSE-349 :cite:`LSE-349` defines the project's official Data Visualization CS (DVCS) as a x-y transpose of the CCS. We should be aware that most of the time when we see a visualization of certain quantities over the entire focal plane, a raft, or a single CCD, if the CS is not explicitly given, the assumption should be that it is in DVCS.
 
 .. code-block:: py
 
@@ -433,7 +438,7 @@ The Camera roator uses the CCS. This is looking at the camera mounting surface f
 
 According to the rotator operator's manual :cite:`rotatorManual`, while looking from the sky, a positive rotation angle is counterclockwise. This is opposite of the azimuth angle as defined in the OCS.
 
-When the rotator angle is non-zero, the CCS is rotated around the optical axis, along with the science sensors and wavefront sensors. But the commands we send to M1M3, M2, and the hexapods will still need to be their own CS, in order for the commands to be interpreted properly. So we have to ``de-rotate`` somewhere in the AOS pipeline. The possible options are -
+When the rotator angle is non-zero, the CCS is rotated around the optical axis, along with the science sensors and wavefront sensors. But the commands we send to M1M3, M2, and the hexapods will still need to be their own CSs, in order for the commands to be interpreted properly. So we have to ``de-rotate`` somewhere in the AOS pipeline. The possible options are -
 
 #. Rotate the images (from the CCS into the OCS). This is not a good option - rotating CCD images involves intensity interpolation, which introduces additional noise. For example, astigmatisms have all their signal in the donut boundary, and 200nm of astigmatism only shifts the boundary by about 1/3 pixels. This can easily get lost in image rotation.
 #. Rotate the senM (so that the Zernikes are still in the CCS while the AOS commands are in the OCS). The senM can be rotated analytically since it is based on an axisymmetric system. Only the Zernikes need to be rotated, in both the orientation (pupil coordinates) and their positions relative to the field center (image coordinates). A function will need to be developed to create a senM in real time using the camera rotation angle as the input. Mathematically this should not be hard to do, but it will be less intuitive for debugging when things go wrong. That is why we prefer the next option, at least during early commissioning. We can reconsider this option after things appear to work correctly with the next option.
@@ -610,9 +615,9 @@ All the measurements done using the Alignment System Control (ASC) will be done 
 Summary
 #######
 
-To summarize, to operate the AOS properly, we will have to continue to use the following CS,
+To summarize, to operate the AOS properly, we will have to continue to use the following CSs,
 
-- Zemax CS (same as PhoSim CS)
+- ZCS (same as PCS)
 - OCS
 - M1M3 CS
 - M2 CS
@@ -620,7 +625,7 @@ To summarize, to operate the AOS properly, we will have to continue to use the f
 - CCS and CCCS (with zero rotator angle)
 - CCS and CCCS (with non-zero rotator angle)
 
-The document intends to capture the definitions of these CS, and the transformations between them.
+The document intends to capture the definitions of these CSs, and the transformations between them.
 As we go further into testing and commissioning, it may become clearer that there are better ways to handle particular aspects of these CS definitions and transformations. The document is expected to be a living document and be updated when design decisions change.
 
 
