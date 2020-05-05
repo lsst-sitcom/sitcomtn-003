@@ -70,18 +70,18 @@ The operations of the Rubin Observatory Active Optics System (AOS) involve the f
 - LSSTCam (during commissioning and operations)
 
 Over the years, each component has been under development under their own coordinate system (CS).
-Sometimes the situation can be even more complicated - A single vendor may be using multiple CS for different sub-components (for example, mechanical versus optical). There are also inconsistencies between various engineering models and drawings.
+Sometimes the situation can be even more complicated - A single vendor may be using multiple CSs for different sub-components (for example, mechanical versus optical). There are also inconsistencies between various engineering models and drawings.
 
-If we include simulations and control algorithm work, there are additional CS that are relevant to the AOS,
+If we include simulations and control algorithm work, there are additional CSs that are relevant to the AOS,
 
 - Zemax - as defined in `the project official optical model <https://confluence.lsstcorp.org/display/SYSENG/As-built+optical+model>`__ (This is used to calculate the optical sensitivity matrix)
 - PhoSim :cite:`2015ApJS..218...14P` (This is used for closed-loop simulations)
 
-In order for the AOS to work as one system, a clean understanding of these CS and how they fit together is required. This is the major objective of this technical note. We will also discuss how to transform coordinates and operations between various CS, and more importantly, how to transform everything into a common CS - the Optical CS.
+In order for the AOS to work as one system, a clean understanding of these CSs and how they fit together is required. This is the major objective of this technical note. We will also discuss how to transform coordinates and operations between various CSs, and more importantly, how to transform everything into a common CS - the Optical CS.
 
 .. note::
 
-   Document-18499 :cite:`Document-18499` defines a set of CS and the transformations between them. However, it doesn't go into all the levels of details that are sufficient for understanding the AOS operations.
+   Document-18499 :cite:`Document-18499` defines a set of CSs and the transformations between them. However, it doesn't go into all the levels of details that are sufficient for understanding the AOS operations.
 
 .. _section-ocs:
 
