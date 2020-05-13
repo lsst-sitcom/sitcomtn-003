@@ -145,11 +145,11 @@ The Zemax/PhoSim Coordinate System (ZCS)
 
 The optical sensitivity matrix (senM) is derived using the Zemax optical model.
 Therefore, everything about the senM follows the ZCS. We were able to close the simulation loop with PhoSim, because we made PhoSim consistent with Zemax.
-With the actual hardware, we will need to convert all commands returned the AOS control into the proper CS of each component before they are applied.
+With the actual hardware, we will need to convert all commands returned by the AOS control into the proper CS of each component before they are applied.
 
 .. note::
 
-    Note that we apply the decenters and tilts in Zemax via ``Coordinate Breaks``. Mathematically the order of decenters and tilts matter. In Zemax, there is a ``order flag``. When it is set to 0, Zemax does the decenters first, then x-tilt, y-tilt, z-rotation. When the ``order flag`` is set to 1, Zemax does these in exact opposite order, so that users can easily go back to the original CS :cite:`Zemax13manual`. However, in the AOS context, we don't really care about these because the tilts are always small enough for the order not to make a difference. If this is not true, then the basic approach of taking the decenters and tilts of the hexapods as independent variable in the AOS control wouldn't be correct.
+    Note that we apply the decenters and tilts in Zemax via ``Coordinate Breaks``. Mathematically the order of decenters and tilts matter. In Zemax, there is a ``order flag``. When it is set to 0, Zemax does the decenters first, then x-tilt, y-tilt, z-rotation. When the ``order flag`` is set to 1, Zemax does these in exact opposite order, so that users can easily go back to the original CS :cite:`Zemax13manual`. However, in the AOS context, we don't really care about these because the tilts are always small enough (on the arc second level) for the order not to make a difference. If this is not true, then the basic approach of taking the decenters and tilts of the hexapods as independent variables in the AOS control wouldn't be correct.
 
 ####
 M1M3
@@ -178,10 +178,12 @@ Our goal here is not to change all the engineering drawings to be in this CS. In
 
 Note that M3 vertex is at (0, 0, -233.8)mm in the OCS.
 
-The Rubin Obs. official M1M3 Finite Element Model (FEM), as provided by Doug Neil and Ed Hileman, uses the M1M3 CS.
+The Rubin Obs. official M1M3 Finite Element Model (FEM), as provided by Doug Neill and Ed Hileman, uses the M1M3 CS.
 `The bending mode shapes and forces derived using this FEM
 <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_README.txt>`__
 use the M1M3 CS as well.
+A visualization of the first 20 M1M3 surface normal bending mode shapes can be found at the bottom of
+`this notebook <https://github.com/lsst-sitcom/M1M3_ML/blob/master/finalBendingModes.ipynb>`__.
 
 - When the force on an single-axis actuator or the primary cylinder of a lateral or crosslateral actuator is positive, it pushes M1M3 toward the sky, along +z axis. The bending mode forces are given `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_force.txt>`__.
 - For bending modes, there are two variaties. The `surface normal bending modes <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_grid.txt>`__ are those that were directly measured in the RFCML using the interferometers. Here the displacement vectors of the Finite Element nodes point toward the center of curvature, and are normal to the M1M3 surface. For use in an optical raytrace program like Zemax or PhoSim, and for deriving the senM, we need the `surface sag bending modes <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_sag.txt>`__. These displacement vectors point along +z axis of the OCS or M1M3 CS.
@@ -260,7 +262,7 @@ The M2 LabView control software uses M2 CS (most likely by coincidence). See
 The M2 Matlab tools which are used to generate the configuration files uses the M2 FEA CS. See
 `here <https://github.com/lsst-ts/ts_mtm2_matlab_tools/blob/master/ReferenceFiles/AxialActuatorLocations.csv>`__.
 The configuration file thus generated are usable by the LabView software because
-when the configuration files refer to actuators, for example, in the influence matrix and decoupling matrix, they refer to them by actuator IDs instead of their coordinates \ [#label1]_.
+when the configuration files refer to actuators, for example, in the influence matrix and decoupling matrix, they refer to them by actuator IDs instead of their coordinates.
 When we reposition the M2 mirror relative to its cell, that is in referece to the M2 CS.
 The axial actuator force distribution found on the M2 Engineering User Interface (EUI) uses the M2 CS.
 
@@ -268,6 +270,9 @@ So, on the bending modes -
 
 - `The bending mode forces <https://github.com/lsst-sitcom/M2_FEA/blob/master/data/M2_1um_72_force.txt>`__ were calculated in the M2 FEA CS but then converted into the M2 CS. At zenith pointing, a positive bending force means that the actuator is pulling up. While applying the forces to the control system, the forces are also in the M2 CS, where a positive force means pulling the mirror toward the cell, as evidenced in the `LUT test <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__.
 - To be consistent with M1M3, M2 bending mode shapes also come with two variaties. The `surface normal bending modes <https://github.com/lsst-sitcom/M2_FEA/blob/master/data/M2_1um_72_grid.txt>`__ has the displacement vectors pointing toward the center of curvature of M2 on the back side of M2, and are normal to the M2 surface. The `surface sag bending modes <https://github.com/lsst-sitcom/M2_FEA/blob/master/data/M2_1um_72_sag.txt>`__ have the displacement vectors along +z axis in the M2 CS.
+
+A visualization of the first 20 M2 surface normal bending mode shapes can be found at the bottom of
+`this notebook <https://github.com/lsst-sitcom/M2_FEA/blob/master/finalBendingModes.ipynb>`__.
 
 Some clarifications on the M2 LUT -
 
@@ -281,7 +286,6 @@ Some clarifications on the M2 LUT -
   Therefore, when the telescope moves from zenith pointing to horizon pointing, the M2 LUT angle goes from 90 degrees to 0.
 - The M2 inclinometer read out obeys the same definition as the M2 LUT angle. See `here <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__.
 
-.. [#label1] Te-Wei needs to look at the code and confirm this.
 
 .. Important::
 
@@ -309,7 +313,7 @@ The M2 hexapod uses M2 CS. A few additional notes -
 
 The M2 hexapod in the M2 CS.
 
-The M2 hexapod LUT angle is defined the same way as the OCS zenith angle \ [#label2]_, ranging between 0 and 90 degrees.
+The M2 hexapod LUT angle is defined the same way as the OCS zenith angle, ranging between 0 and 90 degrees.
 
 .. Important::
 
@@ -322,7 +326,6 @@ The M2 hexapod LUT angle is defined the same way as the OCS zenith angle \ [#lab
        return -dx, dy, -dz, -rx, -ry
 
 
-.. [#label2] Te-Wei needs to look at the code and confirm this.
 
 
 #######
@@ -371,7 +374,8 @@ Two out of the four wavefront sensors (R00 and R44) have their CCD segments orie
    def ccs2dvcs(x,y,z):
        return y,x,z
 
-The wavefront sensors are rotated on the focal plane. The wavefront sensor images we get from the DAQ will need to be rotated to be put into the CCS. See `here in the IM code <https://github.com/bxin/IM/blob/9d74b83eb15021e91d27bf96aa262ff378550818/source/aosWFS.py#L402>`__ or `here in ts_wep code <https://github.com/lsst-ts/ts_wep/blob/master/python/lsst/ts/wep/WepController.py#L408-L421>`__.
+The wavefront sensors are rotated on the focal plane. The wavefront sensor images we get from the DAQ will need to be rotated to be put into the CCS. See `here in the IM code <https://github.com/bxin/IM/blob/9d74b83eb15021e91d27bf96aa262ff378550818/source/aosWFS.py#L402>`__ or `here in ts_wep code <https://github.com/lsst-ts/ts_wep/blob/master/python/lsst/ts/wep/WepController.py#L408-L421>`__
+~\footnote{The rotations for the real images from the DAQ may need to be different, because whether or not the DAQ does the rotation for us is TBD.}.
 The `cwfs <https://github.com/bxin/cwfs>`__ code was developed initially for R44. The mask parameter interpolation and off-axis distortion coefficients interpolation were initially modeled for R44 as well. We then rely on the axi-symmetry of the optical system to deal with the other wavefront sensors - we rotate a wavefront sensors by a multiple of 90 degrees to get it to the R44 position, do all the interpolations we need to get proper parameters, then rotate back to its true location.
 
 When the telescope points at zenith, with zero azimuth angle, the OCS +y will point to south, and OCS +x will point to west. If a source in the sky starts from the bore sight and moves north (increating Declination), it is going to show up on the detector as moving in +y in the CCS (see off-axis raytrace in the figure below). If a source in the sky starts from the bore sight and moves east (increasing Right Ascension), it is going to show up on the detector as moving in +x in the CCS. Therefore, relative to R22, sources on R44 have larger Ra and Dec values.
@@ -406,7 +410,7 @@ The Camera hexapod uses the CCS. A few additional notes -
 
 The Camera hexapod in the CCS.
 
-The camera hexapod LUT angle is defined the same way as the OCS zenith angle \ [#label3]_, ranging between 0 and 90 degrees.
+The camera hexapod LUT angle is defined the same way as the OCS zenith angle, ranging between 0 and 90 degrees.
 
 .. Important::
 
@@ -418,7 +422,6 @@ The camera hexapod LUT angle is defined the same way as the OCS zenith angle \ [
     def zcs2ccs_cmd(dx, dy, dz, rx, ry):
        return -dx, dy, -dz, -rx, -ry
 
-.. [#label3] Te-Wei needs to look at the code and confirm this.
 
 
 ##############
@@ -609,7 +612,13 @@ For example, in the Zemax model,
 Alignment System
 ################
 
-All the measurements done using the Alignment System Control (ASC) will be done in the M1M3 CS, which is the same as OCS. The ASC will subtract hexapod reference positions from the measurements, so that it is easy to see the deviation from the reference positions. These deviations will also be in the M1M3 CS, or OCS.
+The way the Alignment System Control (ASC) works is to measure the rigid body positions of M2 and the camera in the M1M3 CS or some CSs that are tied to the M1M3 CS, determine the offset relative to their reference positions, then command the hexapods to move M2 and the camera to their reference positions.
+
+To facilitate the above operations, it would be the easiest to have the ASC report target positions in the M2 CS and CCS, for M2 and the camera, respectively, so that the inverse of the offsets can be sent to the hexapods without further coordinate transformations.
+After a command is issued to measure the position of a target (M2 or Camera), a measurement plan is executed by the Spatial Analyzer (SA), which measures the x,y, and z of all the Spherically Mounted Reflectors (SMSs), and fit them to an internal model of the target. The CSs used by the SA are configurable.
+
+The SMRs for the camera will rotate with the rotator. The SA can measure the rotation angle and take that into account when reporting the camera position. The reported camera position will be the same as what one would get by setting roator angle to zero and doing the same measurement.
+
 
 #######
 Summary
