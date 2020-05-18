@@ -191,7 +191,7 @@ A visualization of the first 20 M1M3 surface normal bending mode shapes can be f
 Like other components of the AOS, M1M3 operates mostely off its Look-Up Table (LUT), which contains our best knowledge of the forces as functions as gravity (or zenith angle) and temperature profiles on and around the mirror surfaces. The current M1M3 LUT can be found `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/FLUT.yaml>`__.
 
 - The zenith angle, as the primary input to the M1M3 LUT, is defined the same way as the OCS zenith angle as defined in Sec. :ref:`section-ocs`.
-- Unrelated to the bending modes, but relevant to the LUT, are the forces on the secondary cylinders of the lateral and crosslateral actuators. See all the M1M3 actuator types and their orientations `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/LS_CUP_ACTSTYLE_ID.xlsx>`__.
+- Unrelated to the bending modes, but relevant to the LUT, are the forces on the secondary cylinders of the lateral and crosslateral actuators. The lateral actuators have their secondary cylinders oriented 45 degrees from the +y axis (for +Y laterals) or -y axis (for -Y laterals) in the y-z plane. Their primary use is to support the weight of the mirror for off-zenith pointings and slews in the altitude direction. The cross-lateral actuators have their secondary cylinders oriented 45 degrees from the +x axis (for x<0) or the -x axis (for x>0) in the x-z plane. These are used primarily for azimuth slewing. See all the M1M3 actuator types and their orientations `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/LS_CUP_ACTSTYLE_ID.xlsx>`__.
 
   - 96 out of the 100 lateral actuators are +Y laterals. When the force on the secondary cylinder of an +Y lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between +y and +z axes.
   - 4 of the lateral actuators are -Y laterals (due to space constraints). When the force on the secondary cylinder of an -Y lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between -y and +z axes.
@@ -580,7 +580,7 @@ Pupil Coordinates
 #################
 
 Because the senM is calculated in ZCS, the annular Zernikes we use in conjunction with the senM also need to be in the ZCS. Assuming the images we get from the DAQ is in CCS, we need to convert them into ZCS before we run
-`cwfs <https://github.com/bxin/cwfs>`__ on them. Since from CCS to ZCS is a 180 degree rotation around the z-axis, the images simply need a left-right flip.
+`cwfs <https://github.com/bxin/cwfs>`__ on them. Since from CCS to ZCS is a 180 degree rotation around the y-axis, the images simply need a left-right flip.
 
 .. code:: py
 
@@ -615,7 +615,7 @@ Alignment System
 The way the Alignment System Control (ASC) works is to measure the rigid body positions of M2 and the camera in the M1M3 CS or some CSs that are tied to the M1M3 CS, determine the offset relative to their reference positions, then command the hexapods to move M2 and the camera to their reference positions.
 
 To facilitate the above operations, it would be the easiest to have the ASC report target positions in the M2 CS and CCS, for M2 and the camera, respectively, so that the inverse of the offsets can be sent to the hexapods without further coordinate transformations.
-After a command is issued to measure the position of a target (M2 or Camera), a measurement plan is executed by the Spatial Analyzer (SA), which measures the x,y, and z of all the Spherically Mounted Reflectors (SMSs), and fit them to an internal model of the target. The CSs used by the SA are configurable.
+After a command is issued to measure the position of a target (M2 or Camera), a measurement plan is executed by the Spatial Analyzer (SA), which measures the x, y, and z of all the Spherically Mounted Reflectors (SMSs), and fit them to an internal model of the target. The CSs used by the SA are configurable.
 
 The SMRs for the camera will rotate with the rotator. The SA can measure the rotation angle and take that into account when reporting the camera position. The reported camera position will be the same as what one would get by setting roator angle to zero and doing the same measurement.
 
