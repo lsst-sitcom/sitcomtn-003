@@ -75,13 +75,18 @@ Sometimes the situation can be even more complicated - A single vendor may be us
 If we include simulations and control algorithm work, there are additional CSs that are relevant to the AOS,
 
 - Zemax - as defined in `the project official optical model <https://confluence.lsstcorp.org/display/SYSENG/As-built+optical+model>`__ (This is used to calculate the optical sensitivity matrix)
-- PhoSim :cite:`2015ApJS..218...14P` (This is used for closed-loop simulations)
+- Photon Simulator (PhoSim) :cite:`2015ApJS..218...14P` (This is used for closed-loop simulations)
 
 In order for the AOS to work as one system, a clean understanding of these CSs and how they fit together is required. This is the major objective of this technical note. We will also discuss how to transform coordinates and operations between various CSs, and more importantly, how to transform everything into a common CS - the Optical CS.
 
 .. note::
 
    Document-18499 :cite:`Document-18499` defines a set of CSs and the transformations between them. However, it doesn't go into all the levels of details that are sufficient for understanding the AOS operations.
+
+
+.. note::
+
+   This tech note only deals with the CSs within the as-built observatory. The sky coordinates, and how they map onto our detectors, are handled by the World Coordinate System (WCS). The WCS is needed by the AOS pipeline for source identification and catalog-based source finding. Potential approaches of doing WCS include extrapolating the Data-Management-provided WCS to the wavefront sensor locations, and creating our own WCS by matching correlation-based source finding with a bright-star catalog.
 
 .. _section-ocs:
 
@@ -375,7 +380,7 @@ The wavefront sensors are rotated on the focal plane. The wavefront sensor image
 ~\footnote{The rotations for the real images from the DAQ may need to be different, because whether or not the DAQ does the rotation for us is TBD.}.
 The `cwfs <https://github.com/bxin/cwfs>`__ code was developed initially for R44. The mask parameter interpolation and off-axis distortion coefficients interpolation were initially modeled for R44 as well. We then rely on the axi-symmetry of the optical system to deal with the other wavefront sensors - we rotate a wavefront sensors by a multiple of 90 degrees to get it to the R44 position, do all the interpolations we need to get proper parameters, then rotate back to its true location.
 
-When the telescope points at zenith, with zero azimuth angle, the OCS +y will point to south, and OCS +x will point to west. If a source in the sky starts from the bore sight and moves north (increating Declination), it is going to show up on the detector as moving in +y in the CCS (see off-axis raytrace in the figure below). If a source in the sky starts from the bore sight and moves east (increasing Right Ascension), it is going to show up on the detector as moving in +x in the CCS. Therefore, relative to R22, sources on R44 have larger Ra and Dec values.
+When the telescope points at zenith, with zero azimuth angle, the OCS +y will point to south, and OCS +x will point to west. If a source in the sky starts from the bore sight and moves north (increasing Declination), it is going to show up on the detector as moving in +y in the CCS (see off-axis raytrace in the figure below). If a source in the sky starts from the bore sight and moves east (increasing Right Ascension), it is going to show up on the detector as moving in +x in the CCS. Therefore, relative to R22, sources on R44 have larger Ra and Dec values.
 
 .. figure:: /_static/offaxis.png
    :name: fig-offaxis
@@ -436,7 +441,13 @@ The camera rotator was manufactured by Moog CSA Engineering.
 The Camera roator uses the CCS. This is looking at the camera mounting surface from the M1M3.
 
 
-According to the rotator operator's manual :cite:`rotatorManual`, while looking from the sky, a positive rotation angle is counterclockwise. This is opposite of the azimuth angle as defined in the OCS.
+According to the rotator operator's manual :cite:`rotatorManual`, while looking from the sky, a positive rotation angle is counterclockwise. This is opposite of the azimuth angle as defined in the OCS. In simulations, both `PhoSim <https://bitbucket.org/phosim/phosim_release/wiki/Instance%20Catalog>`__ and the `Operation Simulator (OpSim) <https://confluence.lsstcorp.org/display/SIM/Summary+Table+Column+Descriptions>`__ use the command ``rotTelPos`` to define the rotator angle. This angle defines the projection of pupil onto the detectors.
+When the telescope points at zenith, with zero azimuth angle, the OCS +y will point to south, and OCS +x will point to west.
+Looking from the sky, a positive rotator angle rotates the camera counterclockwise.
+The pupil rotation relative to the camera will be clockwise.\ [#label1]_
+
+.. [#label1] A related angle as used by the similations is the ``rotSkyPos``, which defines the sky rotation relative to the camera coordinates, i.e. the projection of the sky onto the detectors. We want ``rotSkyPos`` to stay constant during tracking. Other things unchanged, looking from the sky, a positive rotator angle makes the sky turn clockwise relative to the camera (north moves toward the east). The corresponds to an increase in ``rotSkyPos``.
+
 
 When the rotator angle is non-zero, the CCS is rotated around the optical axis, along with the science sensors and wavefront sensors. But the commands we send to M1M3, M2, and the hexapods will still need to be their own CSs, in order for the commands to be interpreted properly. So we have to ``de-rotate`` somewhere in the AOS pipeline. The possible options are -
 
@@ -604,6 +615,7 @@ For example, in the Zemax model,
 
 .. note::
    Ideally we want the senM and the Zernikes to be all in CCS, in which case we can largely forget about ZCS. We are keeping them in ZCS for now, because if we switch everything to CCS then the current closed-loop simulations with PhoSim will break (or at least require non-trivial work to add additional CS transformations in order to maintain convergence.) Once everything works smoothly with the real hardware, we will reconsider converting senM and the Zernikes into CCS. It won't be hard to do, because, for example, an astigmatism with any orientation can be decomposed into z5 and z6, same for the coma pair, trifoid pair, and so on.
+
 
 ################
 Alignment System
