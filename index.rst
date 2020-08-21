@@ -96,6 +96,7 @@ Our AOS system-wide CS is the Optical Coordinate System (OCS). The definition of
 - +x axis goes in parallel with the elevation axis. When look from the sky, +x points to the right.
 - +y axis can then be determined using the right hand rule. At horizon pointing, +y goes up.
 - The azimuth angle is zero when the telescope points toward northern horizon. Looking from the sky, it increases clockwise.
+- The elevation angle is zero when the telescope points at horizon. It increases to 90 degrees for zenith pointing.
 - The zenith angle is zero when the telescope points at zenith. It increases to 90 degrees for horizon pointing.
 
 .. figure:: /_static/ocs.png
@@ -110,8 +111,8 @@ Relative to the ground, the OCS rotates with the azimuth angle and the zenith an
 An easy way to identify the +x/+y/+z while looking at a drawing or the actual hardware is that, the walkway on the TMA, above M1M3, is in the +y direction. Otherwise when we go toward horizon it is going to bump into the dome floor.
 
 .. note::
-   The Telescope and Site top-level CS document is LTS-136 :cite:`LTS-136`, and the Camera top-level CS document is LCA-280 :cite:`LCA-280`. Unlike those two documents, we do not define the Observatory Mount CS or the Azimuth CS, because these CSs, as defined by LTS-136 :cite:`LTS-136` and LCA-280 :cite:`LCA-280`, actually contradict each other, in terms of which axis points north, which points west, etc. We also avoid the use of terms such as ``elevation angle`` and ``altitude``. Instead, we always use ``zenith angle``, as defined above.
-
+   The Telescope and Site top-level CS document is LTS-136 :cite:`LTS-136`, and the Camera top-level CS document is LCA-280 :cite:`LCA-280`. Unlike those two documents, we do not define the Observatory Mount CS or the Azimuth CS, because these CSs, as defined by LTS-136 :cite:`LTS-136` and LCA-280 :cite:`LCA-280`, actually contradict each other, in terms of which axis points north, which points west, etc.
+   It was agreed that :cite:`SITCOMTN-004` we should always use ``elevation angle`` as the input variable to gravity components of the Look-Up Tables (LUTs).
 
 ################
 Zemax and PhoSim
@@ -188,9 +189,9 @@ A visualization of the first 20 M1M3 surface normal bending mode shapes can be f
 - When the force on an single-axis actuator or the primary cylinder of a lateral or crosslateral actuator is positive, it pushes M1M3 toward the sky, along +z axis. The bending mode forces are given `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_force.txt>`__.
 - For bending modes, there are two variaties. The `surface normal bending modes <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_grid.txt>`__ are those that were directly measured in the RFCML using the interferometers. Here the displacement vectors of the Finite Element nodes point toward the center of curvature, and are normal to the M1M3 surface. For use in an optical raytrace program like Zemax or PhoSim, and for deriving the senM, we need the `surface sag bending modes <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/M1M3_1um_156_sag.txt>`__. These displacement vectors point along +z axis of the OCS or M1M3 CS.
 
-Like other components of the AOS, M1M3 operates mostely off its Look-Up Table (LUT), which contains our best knowledge of the forces as functions as gravity (or zenith angle) and temperature profiles on and around the mirror surfaces. The current M1M3 LUT can be found `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/FLUT.yaml>`__.
+Like other components of the AOS, M1M3 operates mostely off its LUT, which contains our best knowledge of the forces as functions as gravity (or elevation angle) and temperature profiles on and around the mirror surfaces. The current M1M3 LUT can be found `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/FLUT.yaml>`__.
 
-- The zenith angle, as the primary input to the M1M3 LUT, is defined the same way as the OCS zenith angle as defined in Sec. :ref:`section-ocs`.
+- The elevation angle, as the primary input to the M1M3 LUT, is defined the same way as the OCS elevation angle as defined in Sec. :ref:`section-ocs`.
 - Unrelated to the bending modes, but relevant to the LUT, are the forces on the secondary cylinders of the lateral and crosslateral actuators. The lateral actuators have their secondary cylinders oriented 45 degrees from the +y axis (for +Y laterals) or -y axis (for -Y laterals) in the y-z plane. Their primary use is to support the weight of the mirror for off-zenith pointings and slews in the altitude direction. The cross-lateral actuators have their secondary cylinders oriented 45 degrees from the +x axis (for x<0) or the -x axis (for x>0) in the x-z plane. These are used primarily for azimuth slewing. See all the M1M3 actuator types and their orientations `here <https://github.com/lsst-sitcom/M1M3_ML/blob/master/data/LS_CUP_ACTSTYLE_ID.xlsx>`__.
 
   - 96 out of the 100 lateral actuators are +Y laterals. When the force on the secondary cylinder of an +Y lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between +y and +z axes.
@@ -278,12 +279,8 @@ Some clarifications on the M2 LUT -
 
 - As we discussed above, for axial actuators, a positve force always pulls the M2 mirror. That is why during the `LUT test <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__, the axial forces went negative when the mirror faced up. The same applies to the tangent links, i.e., the tangent forces are positive when the tangent links pull. That is why during the `LUT test <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__, when tangent link A4 was going toward the ceiling, forces on A2 and A3 were positive.
 
-- The angle which the M2 software uses for looking up forces in the LUT is defined in the range (-270, +90) degrees. We use ``M2 LUT angle`` to refer to this angle. This is built into the M2 software, and we prefer not to mess with it unless absolutely necessary. The M2 `LUT test <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__ revealed the relation between the M2 LUT angle and the OCS zenith angle is
-
-  .. math::
-    M2 LUT\ angle = -(zenith\ angle) + 90 degrees
-
-  Therefore, when the telescope moves from zenith pointing to horizon pointing, the M2 LUT angle goes from 90 degrees to 0.
+- The elevation angle, as the input variable to the M2 gravity component of the LUT, is in the range of [-270, +90] degrees. This is because that for engineering purposes the M2 mirror needs to rotated on its cart by 360 deg.
+  When the telescope moves from zenith pointing to horizon pointing, the elevation angle goes from 90 degrees to 0.
 - The M2 inclinometer read out obeys the same definition as the M2 LUT angle. See `here <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__.
 
 
@@ -313,7 +310,7 @@ The M2 hexapod uses M2 CS. A few additional notes -
 
 The M2 hexapod in the M2 CS.
 
-The M2 hexapod LUT angle is defined the same way as the OCS zenith angle, ranging between 0 and 90 degrees.
+The M2 hexapod LUT angle is defined the same way as the OCS elevation angle, ranging between 0 and 90 degrees.
 
 .. Important::
 
@@ -410,7 +407,7 @@ The Camera hexapod uses the CCS. A few additional notes -
 
 The Camera hexapod in the CCS.
 
-The camera hexapod LUT angle is defined the same way as the OCS zenith angle, ranging between 0 and 90 degrees.
+The camera hexapod LUT angle is defined the same way as the OCS elevation angle, ranging between 0 and 90 degrees.
 
 .. Important::
 
