@@ -281,12 +281,12 @@ Some clarifications on the M2 LUT -
 
 - The elevation angle, as the input variable to the M2 gravity component of the LUT, is in the range of [-270, +90] degrees. This is because that for engineering purposes the M2 mirror needs to rotated on its cart by 360 deg.
   When the telescope moves from zenith pointing to horizon pointing, the elevation angle goes from 90 degrees to 0.
-- The M2 inclinometer read out obeys the same definition as the M2 LUT angle. See `here <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__.
+- The M2 inclinometer read out obeys the same definition as the M2 elevation angle. See `here <https://github.com/lsst-sitcom/M2_summit_2003/blob/master/a17_LUT_cart_rotation.ipynb>`__.
 
 
 .. Important::
 
-  When we derive the senM, we transform M2 bending modes into ZCS before applying them in Zemax. Therefore, M2 bending mode commands as returned by AOS control is directly applicable to the M2 system. [Not true as of this writing, we will make this change soon. After that we will remove this statement.]
+  When we derive the senM, we transform M2 bending modes from M2CS into ZCS before applying them in Zemax. Therefore, M2 bending mode commands as returned by AOS control are in M2CS and directly applicable to the M2 system.
 
 ##########
 M2 Hexapod
