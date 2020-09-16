@@ -51,8 +51,6 @@
 
 .. note::
 
-   **This note is NOT yet published**
-
    The objective of this technote is to clarify all the different coordinate systems that are relevant to the operations of the Rubin Observatory Active Optics System, and the transformations between them, which is crucial for the Active Optics Control to work in a coherent way.
 
 ############
