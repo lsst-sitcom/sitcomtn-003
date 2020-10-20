@@ -107,7 +107,7 @@ Our AOS system-wide CS is the Optical Coordinate System (OCS). The definition of
    :target: ../_images/ocs.png
    :alt: The Optical Coordinate System (OCS)
 
-Optical Coordinate System (OCS). Left: view from the sky; Right: side view from the -X axis.
+   Optical Coordinate System (OCS). Left: view from the sky; Right: side view from the -X axis.
 
 The idea is that the OCS is fixed to M1, which defines the reference for the optical system.
 Relative to the ground, the OCS rotates with the azimuth angle and the zenith angle.
@@ -138,7 +138,7 @@ The ZCS is defined as,
    :target: ../_images/zcs.png
    :alt: The Zemax/PhoSim Coordinate System (ZCS)
 
-The Zemax/PhoSim Coordinate System (ZCS)
+   The Zemax/PhoSim Coordinate System (ZCS)
 
 .. code-block:: py
 
@@ -176,7 +176,7 @@ When looking at M1M3 drawings and data, be wary that there are multiple versions
    :target: ../_images/m1m3.png
    :alt: The M1M3 CS
 
-The M1M3 CS.
+   The M1M3 CS.
 
 Our goal here is not to change all the engineering drawings to be in this CS. Instead, the goal is to make sure that for anything that is being used by the AOS, we can put them into M1M3 CS or OCS correctly.
 
@@ -228,7 +228,7 @@ We define the M2 CS as the following -
    :target: ../_images/m2.png
    :alt: The M2 CS
 
-The M2 CS and M2 FEA CS.
+   The M2 CS and M2 FEA CS.
 
 .. code-block:: py
 
@@ -311,7 +311,7 @@ The M2 hexapod uses M2 CS. A few additional notes -
    :target: ../_images/m2hex.png
    :alt: The M2 Hexapod
 
-The M2 hexapod in the M2 CS.
+   The M2 hexapod in the M2 CS.
 
 The M2 hexapod LUT angle is defined the same way as the OCS elevation angle, ranging between 0 and 90 degrees.
 
@@ -342,7 +342,7 @@ In the AOS context, we define the CCS as the following (We believe this is the s
 - The +z axis points from L1S1 into the camera body, along the optical axis, so that most of the camera components have positive z.
 - The +x axis points toward raft R42, along the parallel transfer direction of the individual segments. The segments are roughly 500 by 2000 pixels. The parallel transfer direction is along the 2000-pixel side.
 - The +y axis points toward raft R24, along the serial register. The serial register is along the 500-pixel side of the CCD segments.
-- **When mounted on the telescope mount, with the rotator angle at zero, the x/y/z axes of the OCS are in parallel with the x/y/z axes of the OCS, and points in the same directions.**
+- **When mounted on the telescope mount, with the rotator angle at zero, the x/y/z axes of the CCS are in parallel with the x/y/z axes of the OCS, and points in the same directions.**
 
 The CCS is fixed to the camera body; we use the focal plane to define the CCS because that is the only camera component that is relevant to the AOS, CS-wise. The lens surfaces do change under different gravity and thermal profile, and even the camera rotator angle. But the AOS does not actively control any camera internal components for image quality improvements.
 
@@ -351,11 +351,22 @@ The CCS is fixed to the camera body; we use the focal plane to define the CCS be
    :target: ../_images/ccs.png
    :alt: The CCS
 
-The Camera CS.
+   The CCS and orientations of individual CCDs and amplifiers in the CCS.
+
+The orientation of individual CCDs in the CCS is shown in the top of the middle column.
+Below it we show the layout of the amplifiers for the CCDs. This applies to both e2v and ITL CCDs.
+Note that a lot of amplifier-level data that are in the camera eTraveller system come as lists, each with 16 elements, one for each amplifier.
+The ordering is [C10, C11, ..., C16, C17, C07, C06, ..., C01, C00].
+On some camera plots they are labelled as [amp1, amp2, ..., amp16].
 
 For the wavefront sensors, the split between the intra- and extra-focal chips are parallel to the CCS y-axis on R00 and R44, and parallel to the CCS x-axis on R40 and R04. Here we refer to each 2k by 4k as one chip. Sometimes we see them refered to as half-chips as well. The one closer to the field center is always the extra-focal chip, which has larger z-coordinate in the CCS. The camera team refers to the extra-focal chip as low chip sometimes, because it is lower than the focal plane when looked through the L3 lens. For the same reason, the intra-focal chips are refered to as high chips.
+The figure above (bottom right) also shows the naming of the amplifiers on R00_S22.
+The wavefront sensors at the other three corners are simply rotated versions of R00_22,
+by :math:`90^\circ` (R40_S02), :math:`180^\circ` (R44_S00), and :math:`270^\circ` (R04_S20).
 
-Two out of the four wavefront sensors (R00 and R44) have their CCD segments oriented the same way as the science sensors. Most of the science sensor segments, as seen in the CCS, has the parallel transfer direction parallel the x-axis. However, astronomers are much more used to seeing images with the parallel transfer direction going vertically, and serial register going horizontally. LSE-349 :cite:`LSE-349` defines the project's official Data Visualization CS (DVCS) as a x-y transpose of the CCS. We should be aware that most of the time when we see a visualization of certain quantities over the entire focal plane, a raft, or a single CCD, if the CS is not explicitly given, the assumption should be that it is in DVCS.
+The official camera detector plane drawing is LCA-13381 :cite:`LCA-13381`.
+
+Most of the science sensor segments, as seen in the CCS, has the parallel transfer direction parallel the x-axis. However, astronomers are much more used to seeing images with the parallel transfer direction going vertically, and serial register going horizontally. LSE-349 :cite:`LSE-349` defines the project's official Data Visualization CS (DVCS) as a x-y transpose of the CCS. We should be aware that most of the time when we see a visualization of certain quantities over the entire focal plane, a raft, or a single CCD, if the CS is not explicitly given, the assumption should be that it is in DVCS.
 
 .. code-block:: py
 
@@ -374,9 +385,10 @@ Two out of the four wavefront sensors (R00 and R44) have their CCD segments orie
    def ccs2dvcs(x,y,z):
        return y,x,z
 
-The wavefront sensors are rotated on the focal plane. The wavefront sensor images we get from the DAQ will need to be rotated to be put into the CCS. See `here in the IM code <https://github.com/bxin/IM/blob/9d74b83eb15021e91d27bf96aa262ff378550818/source/aosWFS.py#L402>`__ or `here in ts_wep code <https://github.com/lsst-ts/ts_wep/blob/master/python/lsst/ts/wep/WepController.py#L408-L421>`__
-~\footnote{The rotations for the real images from the DAQ may need to be different, because whether or not the DAQ does the rotation for us is TBD.}.
+The wavefront sensors are rotated on the focal plane. The wavefront sensor images we get from the DAQ will need to be rotated to be put into the CCS. See `here in the IM code <https://github.com/bxin/IM/blob/9d74b83eb15021e91d27bf96aa262ff378550818/source/aosWFS.py#L402>`__ or `here in ts_wep code <https://github.com/lsst-ts/ts_wep/blob/master/python/lsst/ts/wep/WepController.py#L408-L421>`__ \ [#label2]_
 The `cwfs <https://github.com/bxin/cwfs>`__ code was developed initially for R44. The mask parameter interpolation and off-axis distortion coefficients interpolation were initially modeled for R44 as well. We then rely on the axi-symmetry of the optical system to deal with the other wavefront sensors - we rotate a wavefront sensors by a multiple of 90 degrees to get it to the R44 position, do all the interpolations we need to get proper parameters, then rotate back to its true location.
+
+.. [#label2] The rotations for the real images from the DAQ may need to be different, because whether or not the DAQ does the rotation for us is TBD.
 
 When the telescope points at zenith, with zero azimuth angle, the OCS +y will point to south, and OCS +x will point to west. If a source in the sky starts from the bore sight and moves north (increasing Declination), it is going to show up on the detector as moving in +y in the CCS (see off-axis raytrace in the figure below). If a source in the sky starts from the bore sight and moves east (increasing Right Ascension), it is going to show up on the detector as moving in +x in the CCS. Therefore, relative to R22, sources on R44 have larger Ra and Dec values.
 
@@ -385,7 +397,7 @@ When the telescope points at zenith, with zero azimuth angle, the OCS +y will po
    :target: ../_images/offaxis.png
    :alt: The Off-axis Rays
 
-Off-axis rays in the ZCS.
+   Off-axis rays in the ZCS.
 
 
 ##############
@@ -408,7 +420,7 @@ The Camera hexapod uses the CCS. A few additional notes -
    :target: ../_images/camhex.png
    :alt: The Camera Hexapod
 
-The Camera hexapod in the CCS.
+   The Camera hexapod in the CCS.
 
 The camera hexapod LUT angle is defined the same way as the OCS elevation angle, ranging between 0 and 90 degrees.
 
@@ -436,7 +448,7 @@ The camera rotator was manufactured by Moog CSA Engineering.
    :target: ../_images/rot.png
    :alt: The Camera Rotator
 
-The Camera roator uses the CCS. This is looking at the camera mounting surface from the M1M3.
+   The Camera roator uses the CCS. This is looking at the camera mounting surface from the M1M3.
 
 
 According to the rotator operator's manual :cite:`rotatorManual`, while looking from the sky, a positive rotation angle is counterclockwise. This is opposite of the azimuth angle as defined in the OCS. In simulations, both `PhoSim <https://bitbucket.org/phosim/phosim_release/wiki/Instance%20Catalog>`__ and the `Operation Simulator (OpSim) <https://confluence.lsstcorp.org/display/SIM/Summary+Table+Column+Descriptions>`__ use the command ``rotTelPos`` to define the rotator angle. This angle defines the projection of pupil onto the detectors.
@@ -564,7 +576,7 @@ The definition of CCCS origin above implies that when the ComCam is mounted on t
    :target: ../_images/comcam.png
    :alt: The ComCam
 
-The ComCam CS in the same as CCS in pixel coordinates.
+   The ComCam CS in the same as CCS in pixel coordinates.
 
 .. code:: py
 
@@ -603,6 +615,7 @@ Zemax :cite:`Zemax13manual` uses the same annular Zernike definitions.
    :target: ../_images/aZernikes.png
    :alt: The Annular Zernike polynomials
 
+   The Annular Zernike polynomials.
 
 It is also worth mentioning that, by convention (see :cite:`1992aooe...11.....S`, for example),
 longer optical path length (OPL) means larger phase delay, and the optical path difference (OPD) is negative.
