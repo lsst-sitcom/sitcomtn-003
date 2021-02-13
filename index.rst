@@ -77,6 +77,10 @@ If we include simulations and control algorithm work, there are additional CSs t
 
 In order for the AOS to work as one system, a clean understanding of these CSs and how they fit together is required. This is the major objective of this technical note. We will also discuss how to transform coordinates and operations between various CSs, and more importantly, how to transform everything into a common CS - the Optical CS.
 
+This tech note mostly assumes that the optical system is in perfect alignment.
+When we need to take into account alignment imperfections, more CS will need to be involved.
+This is disucssed in Sec. :ref:`sec-align`.
+
 .. note::
 
    Document-18499 :cite:`Document-18499` defines a set of CSs and the transformations between them. However, it doesn't go into all the levels of details that are sufficient for understanding the AOS operations.
@@ -326,7 +330,7 @@ The M2 hexapod LUT angle is defined the same way as the OCS elevation angle, ran
        return -dx, dy, -dz, -rx, -ry
 
 
-
+.. _sec-lsstcam:
 
 #######
 LSSTCam
@@ -434,6 +438,71 @@ The camera hexapod LUT angle is defined the same way as the OCS elevation angle,
     def zcs2ccs_cmd(dx, dy, dz, rx, ry):
        return -dx, dy, -dz, -rx, -ry
 
+.. _sec-align:
+
+#######################
+Alignment Imperfections
+#######################
+
+Having discussed the M2 CS, the Camera CS, and the hexapods, in this section we talk about what happens when the hexapods are not in perfect alignment.
+
+Fig. :ref:`fig-hexcs` shows how the camera hexapod CS relates to the Camera CS and Collimated Camera CS.
+We use the hexapod hexapod as the example here. What we discuss below applies to the M2 hexapod as well.
+When alignment imperfections are taken in account, we need to define a few additional CS to have a clear picture.
+Otherwise, when a hexapod reports that it is at position (x,y,z,rx,ry,rz), it is not obvious what CS it refers to.
+
+  .. figure:: /_static/hexapodCS.png
+     :name: fig-hexcs
+
+     Hexapod CS, Camera CS, and Collimated Camera CS.
+
+
+The collimated camera CS is the Camera CS when the camera is perfectly aligned.
+The collimated camera CS is fixed relative to the Optical CS, or M1M3 CS.
+It does not move with the hexapod.
+
+Due to mechanical imperfections, the base plate of the hexapod will not be in parallel with the xy plane of the collimated Camera CS.
+When alignments aren't perfect, the motion plate will not be in parallel with the x-y plane of the collimated Camera CS either.
+We therefore need to define the camera hexapod CS, which is fixed relative to the base plate.
+The Camera CS is still the same as defined in Sec. :ref:`sec-lsstcam`.
+It is fixed to the camera hardware, therefore also fixed relative to the camera hexapod motion plate.
+
+In Fig. :ref:`fig-hexcs` (a), the camera hexapod is in its mechanical zero position.
+When the hexapod is in mechanical zero position, the base plate is in parallel with the motion plate.
+The hexapod actuator encoder readings are at their pre-calibrated offset values.
+The hexapod control system reports (x=0, y=0, z=0, rx=0, ry=0, rz=0).
+
+The hexapod low-level controller configuration allows users to speicify the position of the pivot point.
+For AOS operations, we define the pivot point at L1S1 vertex or M2 vertex when the hexapod is in its mechanical zero position.
+The pivot point, once defined, doesn't move with the camera or M2.
+It is fixed relative to the hexapod base plate.
+
+To pivot point configuration interface requires the user to supply (x,y,z) of the pivot point.
+To understand how to specify the (x,y,z) for the pivot point, or to make sure the current default is what we want,
+we have to define another CS, which we call the "hexapod pivot CS".
+The origin of the hexapod pivot CS is at the center of the telescope-side mounting surface, for both the Camera and M2 hexapods.
+The z-axis is perpendicular to the telescope-side mounting surface and points toward the sky.
+The y-axis points to actuator#1 for the M2 hexapod, and to the midpoint between actuator#1 and #2 for the camera hexapod.
+The x-axis is determined by the right-hand rule.
+The (x, y, z) used by the pivot configuration is in reference to this CS.
+Note that Fig. 2 in Sec. 2.2. of LTS-206 has a schematic drawing of this CS, but doesn't explicitly define the x and y axes.
+
+The positions reported by the hexapod control system and MTHexapod CSC are in the hexapod CS.
+The Camera hexapod CS is shown in red in Fig. :ref:`fig-hexcs`.
+The origin of the hexapod CS is at its pivot point.
+The x, y, and z axes are in parallel with the hexapod pivot CS, which is defined above.
+The x-y plane is in parallel with the telescope-side mounting surface.
+The Camera CS overlaps with the hexapod CS when the camera is in its mechanical zero position (Fig. :ref:`fig-hexcs` (a)).
+
+Fig. :ref:`fig-hexcs` (b) shows the camera in a random uncollimated position.
+Now the camera CS has moved away from the camera hexapod CS, because the camera CS moves with the camera.
+
+In Fig. :ref:`fig-hexcs` (c), the camera is in its collimated position.
+The camera CS has been moved so that it overlaps with the collimated camera CS.
+It is clear that the goal of camera hexapod alignment is to position the camera hexapod so that the camera CS overlaps with the collimated camera CS.
+
+For clarify, the hexapod pivot CS is not shown in Fig. :ref:`fig-hexcs`.
+The difference between the camera mechanical zero position (left) and its collimated position (right) in Fig. :ref:`fig-hexcs` has been greatly exagerated.
 
 
 ##############
