@@ -205,7 +205,7 @@ Like other components of the AOS, M1M3 operates mostely off its LUT, which conta
   - 4 of the lateral actuators are -Y laterals (due to space constraints). When the force on the secondary cylinder of an -Y lateral actuator is positive, it pushes M1M3 in the y-z plane, along 45 degrees between -y and +z axes.
   - There are 12 crosslateral actuators, 6 on each side of the +y axis. When the force on the secondar cylinder of a crosslateral actuator is positive, it pushes M1M3 in the x-z plane, along the 45 degree line between either the +z and +x (if the crosslateral actuator has x<0) or the +z and -x directions (if the crosslateral actuator has x>0).
 
-The M1M3 control software uses the M1M3 CS as well (see `here <https://github.com/lsst-ts/ts_m1m3support/blob/master/Controller/SettingFiles/Tables/ForceActuatorTable.csv>`__). When we reposition the M1M3 mirror relative to its cell, that is in referece to the M1M3 CS.
+The M1M3 control software uses the M1M3 CS as well (see `here <https://github.com/lsst-ts/ts_m1m3support/blob/0a4fff4c4bb9bef82b73c5e04aeb79a268cf45bf/SettingFiles/Tables/ForceActuatorTable.csv>`__). When we reposition the M1M3 mirror relative to its cell, that is in referece to the M1M3 CS.
 
 .. Important::
 
@@ -363,7 +363,7 @@ Note that a lot of amplifier-level data that are in the camera eTraveller system
 The ordering is [C10, C11, ..., C16, C17, C07, C06, ..., C01, C00].
 On some camera plots they are labelled as [amp1, amp2, ..., amp16].
 
-For the wavefront sensors, the split between the intra- and extra-focal chips are parallel to the CCS y-axis on R00 and R44, and parallel to the CCS x-axis on R40 and R04. Here we refer to each 2k by 4k as one chip. Sometimes we see them refered to as half-chips as well. The one closer to the field center is always the extra-focal chip, which has larger z-coordinate in the CCS. The camera team refers to the extra-focal chip as low chip sometimes, because it is lower than the focal plane when looked through the L3 lens. For the same reason, the intra-focal chips are refered to as high chips.
+For the wavefront sensors, the split between the intra- and extra-focal chips are parallel to the CCS y-axis on R00 and R44, and parallel to the CCS x-axis on R40 and R04. Here we refer to each 2k by 4k as one chip. Sometimes we see them refered to as half-chips as well. The one closer to the field center is always the extra-focal chip, which has larger z-coordinate in the CCS. The camera team refers to the extra-focal chip as low chip or SW0 sometimes, because it is lower than the focal plane when looked through the L3 lens. For the same reason, the intra-focal chips are refered to as high chips or SW1.
 The figure above (bottom right) also shows the naming of the amplifiers on R00_S22.
 The wavefront sensors at the other three corners are simply rotated versions of R00_22,
 by :math:`90^\circ` (R40_S02), :math:`180^\circ` (R44_S00), and :math:`270^\circ` (R04_S20).
